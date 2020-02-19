@@ -1,0 +1,74 @@
+    
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your downloadfunction.
+Parameters:
+  contentHandling:
+    Type: String
+Resources:    
+  ApiGatewayAccount: 
+    Type: "AWS::ApiGateway::Account"
+    Properties: 
+      CloudWatchRoleArn: "arn:aws:iam::942158337222:role/APIGatewayAudibleCWRole"
+  RestApi:
+    Type: "AWS::ApiGateway::RestApi"
+    Properties:
+      Description: "some rest api"
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Name: "AudGrootFileDownload"
+  SomeResource:
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      ParentId: 
+        Fn::GetAtt: 
+          - "RestApi"
+          - "RootResourceId"
+      PathPart: part
+      RestApiId: 
+        Ref: "RestApi"
+  SomeSubResource:
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      ParentId: 
+        Ref: "SomeResource"
+      PathPart: count
+      RestApiId: 
+        Ref: "RestApi"
+  SomeResponseModel:
+    Type: "AWS::ApiGateway::Model"
+    Properties:
+      ContentType: "application/json"
+      Description: "Empty text/html response."
+      Name: someresponse
+      RestApiId: 
+        !Ref RestApi
+      Schema: {}
+  PostMethod:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      AuthorizationType: "NONE"
+      HttpMethod: POST
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: LAMBDA
+        Uri: 
+          Fn::Join:
+            - ""
+            - - "arn:aws:apigateway:"
+              - "us-east-1"
+              - ":lambda:path/2015-03-31/functions/"
+              - "arn:aws:lambda:us-east-1:942158337222:function:cloud9-audGeneratePSURL-audGeneratePSURL-1C3F6LDP129RY"
+      MethodResponses:
+        - 
+          ResponseModels:
+            application/json: Empty
+          ResponseParameters:
+              method.response.header.location: true
+          StatusCode: 301
+      OperationName: "SomeName"
+      ResourceId:
+        !Ref "SomeSubResource"
+      RestApiId: 
+        !Ref "RestApi"
