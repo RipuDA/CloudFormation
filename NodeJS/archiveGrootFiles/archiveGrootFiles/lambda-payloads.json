@@ -1,0 +1,42 @@
+{
+    "archiveGrootFiles": {
+        "lambda": {
+            "Records": [
+                {
+                    "eventVersion": "2.1",
+                    "eventSource": "aws:s3",
+                    "awsRegion": "us-east-1",
+                    "eventTime": "2020-02-11T19:47:57.169Z",
+                    "eventName": "ObjectCreated:Put",
+                    "userIdentity": {
+                        "principalId": "AWS:AROA5WXIDKTDPULYCPUBZ:ripunjaya.pattnaik@slalom.com"
+                    },
+                    "requestParameters": {
+                        "sourceIPAddress": "72.21.196.69"
+                    },
+                    "responseElements": {
+                        "x-amz-request-id": "F2784E656F29C02B",
+                        "x-amz-id-2": "RX5AtR+8uGAm4Kg+8rzj7voogusyrD1rGWXvmocp0eo4ZtIq10FxPyGMRQDcFO8fLXEvlnW/a3hmbzTTFwbFQuGXpWCdUa4Oy6s6hxo2EC0="
+                    },
+                    "s3": {
+                        "s3SchemaVersion": "1.0",
+                        "configurationId": "MySampleEvent",
+                        "bucket": {
+                            "name": "001audible",
+                            "ownerIdentity": {
+                                "principalId": "A32ZU8ZW7EPX9U"
+                            },
+                            "arn": "arn:aws:s3:::001audible"
+                        },
+                        "object": {
+                            "key": "leadId12345/leadid12345.done",
+                            "size": 0,
+                            "eTag": "d41d8cd98f00b204e9800998ecf8427e",
+                            "sequencer": "005E4304F05BD9BB1D"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
