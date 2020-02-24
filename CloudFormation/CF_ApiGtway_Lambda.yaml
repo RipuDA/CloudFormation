@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Serverless status page app
+Resources:
+  AudGrootGateway:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: Audible Groot File Download Gateway
+  AudGrootGatewayResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref AudGrootGateway
+      ParentId:
+        Fn::GetAtt:
+        - AudGrootGateway
+        - RootResourceId
+      PathPart: download
+  AudGrootGatewayMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: POST
+        Uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:942158337222:function:cloud9-audGeneratePSURL-audGeneratePSURL-1C3F6LDP129RY/invocations
+        RequestTemplates:
+          application/x-www-form-urlencoded: |
+            {
+              #foreach($kvSet in $input.body.split('&'))
+
+                #set($foo = $kvSet.split('='))
+
+                "$foo[0]":"$util.urlDecode($foo[1])"#if($foreach.hasNext),#end
+
+              #end
+            }
+        IntegrationResponses:
+        - StatusCode: 302
+          ResponseParameters:
+            method.response.header.location: integration.response.body.location
+      ResourceId: !Ref AudGrootGatewayResource
+      RestApiId: !Ref AudGrootGateway
+      MethodResponses:
+      - StatusCode: 302
+        ResponseModels:
+            application/json: Empty
+        ResponseParameters:
+          method.response.header.location: true
+  AudGrootGatewayProdStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      DeploymentId: !Ref AudGrootGatewayDeployment
+      RestApiId: !Ref AudGrootGateway
+      StageName: Prod
+  AudGrootGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: AudGrootGatewayMethod
+    Properties:
+      RestApiId: !Ref AudGrootGateway
+      Description: AudGrootGateway deployment
+      StageName: Stage

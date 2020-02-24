@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Auth0 Custom CloudFormation Provider
+Parameters:
+  DefaultSecurityGroup:
+    Type: String
+    Default: ''
+  S3BucketPrefix:
+    Type: String
+    Default: 001audiblecoderepo
+  CFNCustomProviderZipFileName:
+    Type: String
+    Default: lambda/cfn-saml-provider.zip
+Resources:
+  CFNCustomProvider:
+    Type: AWS::Lambda::Function
+    DependsOn:
+      - LambdaRole
+    Properties:
+      Description: Custom SAML Provider CloudFormation Provider
+      Code:
+        S3Bucket: !Sub '${S3BucketPrefix}'
+        S3Key: !Ref 'CFNCustomProviderZipFileName'
+      FunctionName: cfn-saml-provider
+      Handler: saml_provider.handler
+      MemorySize: 128
+      Timeout: 10
+      Role: !GetAtt 'LambdaRole.Arn'
+      Runtime: python3.6
+  LambdaPolicy:
+    Type: AWS::IAM::Policy
+    DependsOn:
+      - LambdaRole
+    Properties:
+      PolicyName: CFNCustomProviderPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - iam:CreateSAMLProvider
+              - iam:UpdateSAMLProvider
+              - iam:DeleteSAMLProvider
+            Resource: '*'
+      Roles:
+        - !Ref 'LambdaRole'
+
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com

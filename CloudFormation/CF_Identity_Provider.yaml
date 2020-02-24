@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Demo SAML Custom Provider
+
+Resources:
+  SAMLProvider:
+    Type: Custom::SAMLProvider
+    Properties:
+      ServiceToken: !Sub 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:cfn-saml-provider'
+      Name: !Sub 'saml-provider-${AWS::StackName}'
+      URL: 'https://idp-integ.federate.amazon.com/api/saml2/v3/metadata'
+Outputs:
+  SAMLProvider:
+    Description: Arn of the SAML provider
+    Value: !Ref 'SAMLProvider'
