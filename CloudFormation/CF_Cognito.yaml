@@ -1,6 +1,6 @@
 
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Auth0 Custom CloudFormation Provider
+Description: Cloud Formation Template for Cognito ID pool
 Parameters:
   S3BucketAuthArn:
     Type: String
